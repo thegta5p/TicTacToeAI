@@ -1,4 +1,5 @@
 import random
+import math
 
 class TTT_cs170_judge:
     def __init__(self):
@@ -59,7 +60,36 @@ class Player_2:
         self.judge = judge
         self.board = judge.board
         
-    def 
+    def minimax(self, board, player):
+
+        if self.judge.is_winner('X'):
+            return -1
+        elif self.judge.is_winner('O'):
+            return 1
+        elif self.judge.is_board_full():
+            return 0
+
+        moves = []
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == '-':
+                    moves.append([i,j])
+
+        scores = []
+
+        for move in moves:
+            #make the move
+            board[move[0]][move[1]] = player
+            #run minimax on the new board
+            scores.append(self.minimax(board, 'X' if player == 'O' else 'O'))
+            #undo the move
+            board[move[0]][move[1]] = '-'
+
+        if player == 'O':
+            return max(scores)
+        else:
+            return min(scores)
+        
     
     def my_play(self):
         # implment your code here
