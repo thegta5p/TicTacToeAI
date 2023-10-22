@@ -59,40 +59,60 @@ class Player_2:
     def __init__(self, judge):
         self.judge = judge
         self.board = judge.board
-        
-    def minimax(self, board, player):
-
-        if self.judge.is_winner('X'):
-            return -1
-        elif self.judge.is_winner('O'):
+    
+    def minimax(self, board, depth, alpha, beta, isMaximizing):
+        if self.judge.is_winner('O'):
             return 1
+        elif self.judge.is_winner('X'):
+            return -1
         elif self.judge.is_board_full():
             return 0
-
-        moves = []
-        for i in range(len(board)):
-            for j in range(len(board[0])):
-                if board[i][j] == '-':
-                    moves.append([i,j])
-
-        scores = []
-
-        for move in moves:
-            #make the move
-            board[move[0]][move[1]] = player
-            #run minimax on the new board
-            scores.append(self.minimax(board, 'X' if player == 'O' else 'O'))
-            #undo the move
-            board[move[0]][move[1]] = '-'
-
-        if player == 'O':
-            return max(scores)
-        else:
-            return min(scores)
         
-    
+        if isMaximizing:
+            best_score = -math.inf
+            for i in range(len(board)):
+                for j in range(len(board[0])):
+                    if board[i][j] == '-':
+                        board[i][j] = 'O'
+                        score = self.minimax(board, depth + 1, alpha, beta, False)
+                        board[i][j] = '-'
+                        best_score = max(score, best_score)
+                        alpha = max(alpha, best_score)
+                        if beta <= alpha:
+                            break
+            return best_score
+        else:
+            best_score = math.inf
+            for i in range(len(board)):
+                for j in range(len(board[0])):
+                    if board[i][j] == '-':
+                        board[i][j] = 'X'
+                        score = self.minimax(board, depth + 1, alpha, beta, True)
+                        board[i][j] = '-'
+                        best_score = min(score, best_score)
+                        beta = min(beta, best_score)
+                        if beta <= alpha:
+                            break
+            return best_score
+        
     def my_play(self):
-        # implment your code here
+        best_score = -math.inf
+        best_move = None
+        for i in range(len(self.board)):
+            for j in range(len(self.board[0])):
+                if self.board[i][j] == '-':
+                    self.board[i][j] = 'O'
+                    score = self.minimax(self.board, 0, -math.inf, math.inf, False)
+                    self.board[i][j] = '-'
+                    if score > best_score:
+                        best_score = score
+                        best_move = (i, j)
+        if best_move:
+            self.board[best_move[0]][best_move[1]] = 'O'
+        
+       
+     # implment your code here
+        
     
 
 # Main Game Loop
@@ -151,4 +171,4 @@ def game_loop():
                 print("It's a tie!")
                 break
 
-# game_loop() # Uncomment this line to play the game, but it must be commented again when you are submitting the code
+game_loop() # Uncomment this line to play the game, but it must be commented again when you are submitting the code
