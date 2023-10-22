@@ -59,6 +59,8 @@ class Player_2:
     def __init__(self, judge):
         self.judge = judge
         self.board = judge.board
+        self.isAiFirst = True
+        self.isAiSecond = True
     
     def minimax(self, board, depth, alpha, beta, isMaximizing):
         if self.judge.is_winner('O'):
@@ -96,6 +98,20 @@ class Player_2:
             return best_score
         
     def my_play(self):
+        if self.isAiFirst:
+            self.board[0][0] = 'O'
+            self.isAiFirst = False
+            self.isAiSecond = False
+            return
+        if self.isAiSecond:
+            if self.board[1][1] == '-':
+                self.board[1][1] = 'O'
+                self.isAiSecond = False
+                return
+            else:
+                self.board[0][0] = 'O'
+                self.isAiSecond = False
+                return
         best_score = -math.inf
         best_move = None
         for i in range(len(self.board)):
@@ -126,6 +142,7 @@ def game_loop():
     win = False
     if starter == 0:
         print("Player 1 starts.")
+        player2.isAiFirst = False
         game.display_board()
         while not win:
             player1.my_play()
@@ -171,4 +188,4 @@ def game_loop():
                 print("It's a tie!")
                 break
 
-game_loop() # Uncomment this line to play the game, but it must be commented again when you are submitting the code
+#game_loop() # Uncomment this line to play the game, but it must be commented again when you are submitting the code
